@@ -45,6 +45,8 @@ import org.elasticsearch.script.ScriptService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -268,6 +270,13 @@ public class RabbitmqRiver extends AbstractRiverComponent implements River {
         connectionFactory.setPassword(rabbitPassword);
         connectionFactory.setVirtualHost(rabbitVhost);
         connectionFactory.setRequestedHeartbeat(new Long(rabbitHeartbeat.getSeconds()).intValue());
+        try {
+            connectionFactory.useSslProtocol();
+        } catch (NoSuchAlgorithmException nsae) {
+            logger.error(nsae.getMessage());
+        } catch (KeyManagementException kme) {
+            logger.error(kme.getMessage());
+        }
 
         logger.info("creating rabbitmq river, addresses [{}], user [{}], vhost [{}]", rabbitAddresses, connectionFactory.getUsername(), connectionFactory.getVirtualHost());
 
